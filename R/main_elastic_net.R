@@ -11,7 +11,7 @@ library(tidyverse)
 library(here)
 library(eNetXplorer)
 library(future)
-library(furrr)  # parallel
+library(furrr) # parallel
 
 # Set up parallel processing
 N_CORES = as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset = 1L))  
@@ -39,7 +39,7 @@ ALPHAS = seq(0,1,by=0.05) # 0:ridge, 1:lasso
 N_RUN  = 100   # number of cross-validation runs
 N_PERM = 100   # number of permutation to generate null distribution
 N_FOLD = 10    # CV fold
-METRIC = "acc" # select model with the best accuracy
+METRIC = "acc"
 
 cat('\n# CONSOLE REPORT ----------------\n')
 cat('DATA_FILE:', DATA, '\n')
@@ -59,11 +59,11 @@ cat('\n\n',str_pad(' LOAD & PREPROC DATA ',80,'both','-'),'\n\n',sep='')
 # load data
 df = read_csv(DATA, show_col_types = FALSE) |> 
     as.data.frame() |> column_to_rownames("Participant_ID") |>
-    mutate(Group = ifelse(Group == "Uninfected", 1, 0)) # binarize
+    mutate(Group = ifelse(Group == "Uninfected", 1, 0)) # 0:Infected, 1:Uninfected
 head(df)
 
 # for prediction
-y = df |> select(Group) |> as.matrix() # 0:Infected, 1:Uninfected
+y = df |> select(Group) |> as.matrix() 
 X = df |> select(-Group) |> as.matrix()
 
 cat('--> data dim:', '\n')

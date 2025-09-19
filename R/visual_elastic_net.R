@@ -18,7 +18,7 @@ META = here("data", "meta_subject.csv")
 SAVE_DIR = here("outs/elastic-net")
 
 # helper functions
-SCRIPT_DIR = here("pipeline", "src")
+SCRIPT_DIR = here("R", "src")
 source(file.path(SCRIPT_DIR, "plt_error_bar.R"))
 source(file.path(SCRIPT_DIR, "plt_roc_curve.R"))
 
@@ -37,7 +37,7 @@ cat('\n\n',str_pad(' MODEL PERFORMANCE ',80,'both','-'),'\n\n',sep='')
 alpha_optimal = which.max(-log10(eNet$QF_model_vs_null_pval))
 
 # prediction accuracy across alpha runs
-pdf(file.path(SAVE_DIR, "train_summary.pdf"), 4.5, 4.5)
+pdf(file.path(SAVE_DIR, "efig7a-train_summary.pdf"), 4.5, 4.5)
 plot.eNetXplorer(eNet, plot.type="summary")
 dev.off()
 
@@ -73,7 +73,7 @@ p2 = plt_error_bar(
 
 library(patchwork)
 p = p1 + p2
-pdf(file.path(SAVE_DIR, "enet_top_features.pdf"), 7, 4)
+pdf(file.path(SAVE_DIR, "fig6b-enet_top_features.pdf"), 7, 4)
 print(p)
 dev.off()
 
@@ -125,7 +125,7 @@ p = ggplot(df_prob, aes(x=true.id, y=probability_uninfected)) +
     theme(axis.text.x = element_text(angle=45, hjust=1)) + 
     #theme(axis.text.x = element_blank()) +
     labs(x="", y="Probability of Uninfected", )
-pdf(file.path(SAVE_DIR, "predict_prob_across_runs.pdf"), 5, 5)
+pdf(file.path(SAVE_DIR, "efig7b-predict_probability_across_runs.pdf"), 5, 5)
 print(p)
 dev.off()
 
@@ -142,23 +142,21 @@ df_roc = roc_curve(df_prob, truth=true.id, .POS_probability)
 # auroc curve
 auroc_score = round(auroc$.estimate, 3)
 p = plt_roc_curve(df_roc, auroc_value = auroc_score)
-pdf(file.path(SAVE_DIR, "auroc_across_runs.pdf"), 4, 4)
+pdf(file.path(SAVE_DIR, "fig6a-auroc_across_runs.pdf"), 4, 4)
 print(p)
 dev.off()
 
 
 # plot distribuion of IL-10 --------------------
 
-DF = file.path(WDIR, "data/data_from_helen", "nasal_protein.csv")
-df_protein = read_csv(DF, show_col_types = FALSE) |>
+DF_RAW = here("data", "nasal_soluble_mediators_raw.csv")
+df_protein = read_csv(DF_RAW, show_col_types = FALSE) |>
     mutate(Participant_ID = as.character(Participant_ID)) |>
-    inner_join(df_meta, by="Participant_ID") |>
+    inner_join(meta_subject, by="Participant_ID") |>
     mutate(true.id = factor(true.id, levels=c("Infected", "Uninfected"))) |>
     mutate(true.id.2 = recode(true.id.2, "Sustained" = "Infected")) |>
     mutate(true.id.2 = factor(true.id.2, levels = c("Infected", "Transient", "Abortive"))) |>
     print()
-
-# df_protein$`IL-10` = df_protein$`IL-10` |> log10() |> scale()
 
 p = ggplot(df_protein, aes(x=true.id, y=`IL-10`)) +
     geom_boxplot(
@@ -187,9 +185,11 @@ p = ggplot(df_protein, aes(x=true.id, y=`IL-10`)) +
     
     theme_classic(base_size=16) + 
     theme(axis.text.x = element_text(angle=45, hjust=1)) + 
-    #theme(axis.text.x = element_blank()) +
     labs(x="", y="IL-10 (pg/ml)")
-save_pdf(p, file.path(SAVE_DIR, "log_il10_distribution.pdf"), 5, 5)
+
+pdf(file.path(SAVE_DIR, "efig7c-log_il10_distribution.pdf"), 5, 5)
+print(p)
+dev.off()
 
 
 # ANALYSIS FINISHED -----------------------------------------------------------
