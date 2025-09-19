@@ -4,7 +4,7 @@
 ## Procedure
 
 + data preparation:
-    + original data were merged & normalized in `R/0_prep_data/R`
+    + original data were merged & normalized in `R/0_prep_data.R`
 + model training:
     + elastic-net classifier was trained by running `R/main_elastic_net.R`
     + conditional independence network was estimated by running `R/main_network.R`
