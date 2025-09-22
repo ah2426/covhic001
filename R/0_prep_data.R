@@ -10,6 +10,7 @@
 
 rm(list = ls())
 library(tidyverse)
+library(here)
 
 # load data
 df_cfreq = read_csv(here("data/data_original", "cell_frequencies.csv")) |>
@@ -46,12 +47,11 @@ df_merge = df_merge |>
 
 write_csv(df_merge, file.path(here("data", "baseline_features_merge.csv")))
 
-# compute pairwise spearman correlation matrix 
-# as input for huge to infer condi independence network
-# ** auto-remove NA entries
+# compute pairwise spearman correlation matrix to encode rank-based co-variation 
+# structure as input for huge to infer conditional independence network
 
 X = df_merge |> select(-c(Group, Participant_ID)) |> as.matrix()
-rho_corr_object = Hmisc::rcorr(X, type="spearman")
+rho_corr_object = Hmisc::rcorr(X, type="pearson")
 print(names(rho_corr_object))
 
 saveRDS(rho_corr_object,
