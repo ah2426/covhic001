@@ -1,5 +1,5 @@
 
-# COVHIC001 machine learning analysis
+# COVHIC001 integrative analysis
 
 ## Procedure
 
