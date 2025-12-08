@@ -51,7 +51,7 @@ write_csv(df_merge, file.path(here("data", "baseline_features_merge.csv")))
 # structure as input for huge to infer conditional independence network
 
 X = df_merge |> select(-c(Group, Participant_ID)) |> as.matrix()
-rho_corr_object = Hmisc::rcorr(X, type="pearson")
+rho_corr_object = Hmisc::rcorr(X, type="spearman")
 print(names(rho_corr_object))
 
 saveRDS(rho_corr_object,
